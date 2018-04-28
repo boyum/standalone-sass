@@ -22,7 +22,6 @@
   "dependencies": {
     "autoprefixer": "^8.4.1",
     "chalk": "^2.4.1",
-    "node-gyp": "^3.6.2",
     "node-sass": "^4.9.0",
     "nodemon": "^1.17.3",
     "postcss": "^6.0.22",
