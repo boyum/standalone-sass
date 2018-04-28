@@ -3,9 +3,7 @@
 'use strict';
 
 const meow = require('meow');
-const {
-  compile
-} = require('./app');
+const StandaloneSass = require('./app');
 
 const cli = meow(`
   Usage
@@ -36,4 +34,4 @@ const cli = meow(`
   }
 });
 
-compile(cli.input[0], cli.flags);
+const compiler = new StandaloneSass(cli.flags, cli.input[0]);
