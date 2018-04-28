@@ -1,0 +1,32 @@
+{
+  "name": "standalone-sass",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/app.js",
+  "scripts": {
+    "test": "xo && ava",
+    "compile": "node ./src/app.js",
+    "watch": "node ./src/app.js --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "bin": "./src/cli.js",
+  "license": "ISC",
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "meow": "^5.0.0",
+    "pkg": "^4.3.1",
+    "xo": "^0.20.3"
+  },
+  "dependencies": {
+    "autoprefixer": "^8.3.0",
+    "chalk": "^2.4.1",
+    "node-sass": "^4.9.0",
+    "nodemon": "^1.17.3",
+    "postcss": "^6.0.21",
+    "recursive-readdir": "^2.2.2"
+  },
+  "xo": {
+    "space": true
+  }
+}
