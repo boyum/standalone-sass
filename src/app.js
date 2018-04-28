@@ -4,7 +4,6 @@ const {
 } = require('util');
 const path = require('path');
 const sass = require('node-sass');
-// Const sassimports = require('node-sass-imports');
 const nodemon = require('nodemon');
 const autoprefixer = require('autoprefixer');
 const recursiveReaddir = require('recursive-readdir');
@@ -45,12 +44,7 @@ class StandaloneSass {
   /**
    * Compiles given directory
    *
-   * @param {string} directory
-   * @param {object} options
-   * @param {boolean} options.watch If true, will watch for file changes in given directory
-   * @param {boolean} options.sourceMap If true, use sourcemap
-   * @param {string} options.dir Another way to pass directory
-   * @param {boolean} compileOnly
+   * @param {Array<string>} changedFiles
    */
   async compile(changedFiles = []) {
     const dir = this.directories[0];
