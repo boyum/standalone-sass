@@ -20,11 +20,11 @@
     "xo": "^0.20.3"
   },
   "dependencies": {
-    "autoprefixer": "^8.3.0",
+    "autoprefixer": "^8.4.1",
     "chalk": "^2.4.1",
     "node-sass": "^4.9.0",
     "nodemon": "^1.17.3",
-    "postcss": "^6.0.21",
+    "postcss": "^6.0.22",
     "recursive-readdir": "^2.2.2"
   },
   "xo": {
