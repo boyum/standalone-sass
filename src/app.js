@@ -4,7 +4,7 @@ const {
 } = require('util');
 const path = require('path');
 const sass = require('node-sass');
-const sassimports = require('node-sass-imports');
+// const sassimports = require('node-sass-imports');
 const nodemon = require('nodemon');
 const autoprefixer = require('autoprefixer');
 const recursiveReaddir = require('recursive-readdir');
@@ -37,7 +37,7 @@ class StandaloneSass {
       return;
     }
 
-    this.fileMap = new Map(sassFiles.map(file => [file, sassimports(file)]));
+    this.fileMap = new Map(sassFiles.map(file => [file, []]));
 
     if (this.options.watch) {
       this.watch(dir);
@@ -57,38 +57,39 @@ class StandaloneSass {
    * @param {boolean} compileOnly 
    */
   async compile(changedFiles = []) {
-    console.log('compiling');
     const dir = this.directories[0];
 
     this.fileMap.forEach(async (sassDependencies, sassFile) => {
       if (changedFiles.length === 0 || (changedFiles.length > 0 && this.arraysHaveCommonItems(changedFiles, sassDependencies))) {
-        let result;
+      let result;
         try {
-          result = await this.compileSass(file, dir, Boolean(this.options.sourceMap));
+          result = await this.compileSass(sassFile, dir, Boolean(this.options.sourceMap));
         } catch (e) {
-          console.log(`${file}: ${chalk.red(e)}`);
+          console.log(`${sassFile}: ${chalk.red(e)}`);
           return;
         }
 
+        this.fileMap.set(sassFile, result.stats.includedFiles);
+
         let css = result.css.toString('utf8');
 
-        css = await this.autoprefix(css, file);
+        css = await this.autoprefix(css, sassFile);
 
-        const cssPath = file
+        const cssPath = sassFile
           .replace('.scss', '.css')
           .replace('.sass', '.css');
 
         await promisify(fs.writeFile)(cssPath, css);
 
-        if (options.sourceMap) {
+        if (this.options.sourceMap) {
           const sourceMapPath = cssPath + '.map';
           await promisify(fs.writeFile)(sourceMapPath, result.map.toString('utf8'));
         }
-        console.log(chalk.green(`Compiled ${file} successfully`));
+        console.log(chalk.green(`Compiled ${sassFile} successfully`));
       }
     });
   }
-
+  
   /**
    * Gets all sass/scss files in given directory recursively
    *
@@ -99,9 +100,15 @@ class StandaloneSass {
     return recursiveReaddir(directory);
   }
 
+  /**
+   * Returns true if any elements in the two arrays are equal strings (case-insensitive)
+   * 
+   * @param {Array<string>} array1 
+   * @param {Array<string>} array2 
+   */
   arraysHaveCommonItems(array1, array2) {
     return array1.some(el => {
-      return array2.includes(el);
+      return array2.some(el2 => el.toUpperCase() === el2.toUpperCase());
     });
   }
 
@@ -166,16 +173,15 @@ class StandaloneSass {
       watch: [directory]
     });
 
+    console.log(chalk.blue(`Watching sass and scss files in ${directory}.`));
+
     nodemon.on('start', () => {
-      console.log(chalk.blue(`Watching sass and scss files in ${directory}.`));
     });
 
-    nodemon.on('restart', (changedFiles) => {
-      this.compile(changedFiles);
+    nodemon.on('restart', changedFiles => {
+      this.compile(changedFiles.map(file => file.replace(/\\/ig, '/')));
     });
   }
 }
-
-
 
 module.exports = StandaloneSass;
