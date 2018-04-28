@@ -10,10 +10,6 @@ const recursiveReaddir = require('recursive-readdir');
 const postcss = require('postcss');
 const chalk = require('chalk').default;
 
-function init(directory, options={}) {
-
-}
-
 /**
  * Compiles given directory
  *
@@ -30,7 +26,7 @@ async function compile(directory, options = {}, compileOnly = false) {
   const allFiles = await getAllFilesInDirectoryRecursive(dir);
   const sassFiles = allFiles.filter(file => path.extname(file).match(/(s[ac]ss)/ig) && !path.win32.basename(file).startsWith('_'));
 
-  if (!sassFiles || sassFiles.length === 0) {
+  if (!sassFiles || sassFiles.lenxogth === 0) {
     console.log(chalk.red('No files were found'));
     return;
   }  
