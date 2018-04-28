@@ -4,7 +4,7 @@ const {
 } = require('util');
 const path = require('path');
 const sass = require('node-sass');
-// const sassimports = require('node-sass-imports');
+// Const sassimports = require('node-sass-imports');
 const nodemon = require('nodemon');
 const autoprefixer = require('autoprefixer');
 const recursiveReaddir = require('recursive-readdir');
@@ -12,23 +12,19 @@ const postcss = require('postcss');
 const chalk = require('chalk').default;
 
 class StandaloneSass {
-  constructor(options, ...directories) {
+  async init(options, ...directories) {
     /** @type {Array<string>} */
     this.directories = directories || [...options.dir];
     /** @type {Map<string, Array<string>>} */
-    this.fileMap;
+    this.fileMap = null;
     this.options = options || {
       watch: false,
       sourceMap: false,
       dir: '.'
     };
 
-    this.init();
-  }
-
-  async init() {
     const dir = this.directories[0];
-    
+
     const allFiles = await this.getAllFilesInDirectoryRecursive(dir);
     const sassFiles = allFiles.filter(file => path.extname(file).match(/(s[ac]ss)/ig) && !path.win32.basename(file).startsWith('_'));
 
@@ -42,7 +38,7 @@ class StandaloneSass {
     if (this.options.watch) {
       this.watch(dir);
     }
-    
+
     this.compile();
   }
 
@@ -54,14 +50,14 @@ class StandaloneSass {
    * @param {boolean} options.watch If true, will watch for file changes in given directory
    * @param {boolean} options.sourceMap If true, use sourcemap
    * @param {string} options.dir Another way to pass directory
-   * @param {boolean} compileOnly 
+   * @param {boolean} compileOnly
    */
   async compile(changedFiles = []) {
     const dir = this.directories[0];
 
     this.fileMap.forEach(async (sassDependencies, sassFile) => {
       if (changedFiles.length === 0 || (changedFiles.length > 0 && this.arraysHaveCommonItems(changedFiles, sassDependencies))) {
-      let result;
+        let result;
         try {
           result = await this.compileSass(sassFile, dir, Boolean(this.options.sourceMap));
         } catch (e) {
@@ -89,7 +85,7 @@ class StandaloneSass {
       }
     });
   }
-  
+
   /**
    * Gets all sass/scss files in given directory recursively
    *
@@ -102,9 +98,9 @@ class StandaloneSass {
 
   /**
    * Returns true if any elements in the two arrays are equal strings (case-insensitive)
-   * 
-   * @param {Array<string>} array1 
-   * @param {Array<string>} array2 
+   *
+   * @param {Array<string>} array1
+   * @param {Array<string>} array2
    */
   arraysHaveCommonItems(array1, array2) {
     return array1.some(el => {

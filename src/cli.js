@@ -34,4 +34,5 @@ const cli = meow(`
   }
 });
 
-const compiler = new StandaloneSass(cli.flags, cli.input[0]);
+const compiler = new StandaloneSass();
+compiler.init(cli.flags, cli.input[0]);
