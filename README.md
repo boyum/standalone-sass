@@ -14,7 +14,8 @@ Standalone sass compiler with [`node-sass`](https://github.com/sass/node-sass) a
     --dir, -d         Directory (default: current directory)
 
   Examples
-    $ standalone-sass -wm --dir assets/styles/
+    $ standalone-sass assets/styles
+    $ standalone-sass -wm --dir assets/styles/    
 ```
 
 `standalone-sass` will check for sass/scss files in every directory that is a descendant of the directory provided, included itself. In watch mode, the changed files and files that depend on them will be built. `standalone-sass` does not build partial sass files (files which file name start with an underscore (_)).
