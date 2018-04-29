@@ -11,9 +11,11 @@ const postcss = require('postcss');
 const chalk = require('chalk').default;
 
 class StandaloneSass {
-  async init(options, ...directories) {
+  async init(options, directories, doCompile = true) {
     /** @type {string[]} */
-    this.directories = directories || [...options.dir];
+    this.directories = directories || options.dir;
+    this.directories = Array.isArray(this.directories) ? this.directories : [this.directories];
+
     /** @type {Map<string, string[]>} */
     this.fileMap = null;
     this.options = options || {
@@ -34,11 +36,15 @@ class StandaloneSass {
 
     this.fileMap = new Map(sassFiles.map(file => [file, []]));
 
+    /* istanbul ignore if */
     if (this.options.watch) {
       this.watch(dir);
     }
 
-    this.compile();
+    /* istanbul ignore if */
+    if (doCompile) {
+      this.compile();
+    }
   }
 
   /**
@@ -47,6 +53,10 @@ class StandaloneSass {
    * @param {string[]} changedFiles
    */
   async compile(changedFiles = []) {
+    if (this.fileMap === null) {
+      return;
+    }
+
     const dir = this.directories[0];
 
     this.fileMap.forEach(async (sassDependencies, sassFile) => {
@@ -70,6 +80,8 @@ class StandaloneSass {
           .replace('.sass', '.css');
 
         await promisify(fs.writeFile)(cssPath, css);
+
+        console.log('sourceMap', this.options.sourceMap);
 
         if (this.options.sourceMap) {
           const sourceMapPath = cssPath + '.map';
@@ -156,6 +168,7 @@ class StandaloneSass {
       .replace('.sass', '.css');
   }
 
+  /* istanbul ignore next */
   watch(directory) {
     nodemon({
       script: './src/app.js',
