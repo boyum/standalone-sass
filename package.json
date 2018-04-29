@@ -4,7 +4,9 @@
   "description": "",
   "main": "./src/app.js",
   "scripts": {
-    "test": "xo && ava",
+    "test": "xo && nyc ava",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "nyc-coverage": "nyc check-coverage --lines 80 --functions 95 --branches 95",
     "compile": "node ./src/app.js",
     "watch": "node ./src/app.js --watch",
     "build": "npx pkg . -t node9-win-x64 --output ./dist/standalone-sass.exe"
@@ -15,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "ava": "^0.25.0",
+    "coveralls": "^3.0.0",
     "meow": "^5.0.0",
     "nyc": "^11.7.1",
     "pkg": "^4.3.1",
@@ -26,9 +29,15 @@
     "node-sass": "^4.9.0",
     "nodemon": "^1.17.3",
     "postcss": "^6.0.22",
-    "recursive-readdir": "^2.2.2"
+    "recursive-readdir": "^2.2.2",
+    "rimraf": "^2.6.2"
   },
   "xo": {
     "space": true
+  },
+  "nyc": {
+    "include": [
+      "./src/app.js"
+    ]
   }
 }
