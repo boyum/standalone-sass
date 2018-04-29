@@ -1,4 +1,4 @@
-# standalone-sass
+# standalone-sass [![Build Status](https://travis-ci.org/boyum/standalone-sass.svg?branch=master)](https://travis-ci.org/boyum/standalone-sass)
 
 Standalone sass compiler with [`node-sass`](https://github.com/sass/node-sass) and [`zeit/pkg`](http://github.com/zeit/pkg).
 
