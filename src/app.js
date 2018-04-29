@@ -12,9 +12,9 @@ const chalk = require('chalk').default;
 
 class StandaloneSass {
   async init(options, ...directories) {
-    /** @type {Array<string>} */
+    /** @type {string[]} */
     this.directories = directories || [...options.dir];
-    /** @type {Map<string, Array<string>>} */
+    /** @type {Map<string, string[]>} */
     this.fileMap = null;
     this.options = options || {
       watch: false,
@@ -44,7 +44,7 @@ class StandaloneSass {
   /**
    * Compiles given directory
    *
-   * @param {Array<string>} changedFiles
+   * @param {string[]} changedFiles
    */
   async compile(changedFiles = []) {
     const dir = this.directories[0];
@@ -93,8 +93,8 @@ class StandaloneSass {
   /**
    * Returns true if any elements in the two arrays are equal strings (case-insensitive)
    *
-   * @param {Array<string>} array1
-   * @param {Array<string>} array2
+   * @param {string[]} array1
+   * @param {string[]} array2
    */
   arraysHaveCommonItems(array1, array2) {
     return array1.some(el => {
