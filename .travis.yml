@@ -18,5 +18,6 @@ cache:
      - "node_modules"
 script: 
   - npm run travis
+  - npm run build
 
 after_success: npm run coverage
