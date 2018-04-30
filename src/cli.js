@@ -12,7 +12,7 @@ const cli = meow(`
   Options
     --watch, -w       Watch files in input directory
     --source-map, -m  Use source maps
-    --dir, -d         Directory (default \`.\`)
+    --dir, -d         Directory
     --file, -f        Specify file
 
   Examples
