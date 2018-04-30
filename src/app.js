@@ -11,23 +11,48 @@ const postcss = require('postcss');
 const chalk = require('chalk').default;
 
 class StandaloneSass {
-  async init(options, directories, doCompile = true) {
-    /** @type {string[]} */
-    this.directories = directories || options.dir;
-    this.directories = Array.isArray(this.directories) ? this.directories : [this.directories];
-
+  async init(options, directoriesAndFiles, doCompile = true) {
     /** @type {Map<string, string[]>} */
     this.fileMap = null;
     this.options = options || {
       watch: false,
       sourceMap: false,
-      dir: '.'
+      dir: '',
+      file: ''
     };
 
-    const dir = this.directories[0];
+    /** @type {string[]} */
+    this.directoriesAndFiles = directoriesAndFiles.filter(async item => (await promisify(fs.lstat)(item)).isDirectory()) || options.dir;
+    if (this.options.dir) {
+      this.directoriesAndFiles = this.directoriesAndFiles.concat(this.options.dir);
+    }
 
-    const allFiles = await this.getAllFilesInDirectoryRecursive(dir);
-    const sassFiles = allFiles.filter(file => path.extname(file).match(/(s[ac]ss)/ig) && !path.win32.basename(file).startsWith('_'));
+    let sassFiles = [];
+
+    if (this.directoriesAndFiles.length > 0) {
+      let allFiles = [];
+
+      await this.directoriesAndFiles.forEach(async dir => {
+        try {
+          const files = await this.getAllFilesInDirectoryRecursive(dir);
+          allFiles = allFiles.concat(files);
+        } catch (e) {
+          if (e.code === 'ENOTDIR') {
+            allFiles = allFiles.concat(dir);
+          } else {
+            console.error(e);
+          }
+        }
+      });
+
+      await sleep(100);
+
+      sassFiles = allFiles.filter(file => path.extname(file).match(/(s[ac]ss)/ig) && !path.win32.basename(file).startsWith('_'));
+    }
+
+    if (this.options.file) {
+      sassFiles = sassFiles.push(this.options.file);
+    }
 
     if (!sassFiles || sassFiles.length === 0) {
       console.log(chalk.red('No files were found'));
@@ -38,7 +63,7 @@ class StandaloneSass {
 
     /* istanbul ignore if */
     if (this.options.watch) {
-      this.watch(dir);
+      this.watch(this.directoriesAndFiles);
     }
 
     /* istanbul ignore if */
@@ -57,11 +82,10 @@ class StandaloneSass {
       return;
     }
 
-    const dir = this.directories[0];
-
     this.fileMap.forEach(async (sassDependencies, sassFile) => {
       if (changedFiles.length === 0 || (changedFiles.length > 0 && this.arraysHaveCommonItems(changedFiles, sassDependencies))) {
         let result;
+        const dir = path.dirname(sassFile);
         try {
           result = await this.compileSass(sassFile, dir, Boolean(this.options.sourceMap));
         } catch (e) {
@@ -80,8 +104,6 @@ class StandaloneSass {
           .replace('.sass', '.css');
 
         await promisify(fs.writeFile)(cssPath, css);
-
-        console.log('sourceMap', this.options.sourceMap);
 
         if (this.options.sourceMap) {
           const sourceMapPath = cssPath + '.map';
@@ -169,14 +191,14 @@ class StandaloneSass {
   }
 
   /* istanbul ignore next */
-  watch(directory) {
+  watch(directoriesAndFiles) {
     nodemon({
       script: './src/app.js',
       ext: 'scss sass',
-      watch: [directory]
+      watch: directoriesAndFiles
     });
 
-    console.log(chalk.blue(`Watching sass and scss files in ${directory}.`));
+    console.log(chalk.blue(`Watching sass and scss files in ${directoriesAndFiles}.`));
 
     nodemon.on('start', () => {
     });
@@ -185,6 +207,12 @@ class StandaloneSass {
       this.compile(changedFiles.map(file => file.replace(/\\/ig, '/')));
     });
   }
+}
+
+function sleep(millis) {
+  return new Promise(resolve => {
+    setTimeout(resolve, millis);
+  });
 }
 
 module.exports = StandaloneSass;
