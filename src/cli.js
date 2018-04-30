@@ -7,15 +7,18 @@ const StandaloneSass = require('./app');
 
 const cli = meow(`
   Usage
-    $ standalone-sass <directory>
+    $ standalone-sass <list of directories or files>
 
   Options
     --watch, -w       Watch files in input directory
     --source-map, -m  Use source maps
     --dir, -d         Directory (default \`.\`)
+    --file, -f        Specify file
 
   Examples
+    $ standalone-sass assets/styles other-assets/styles/styles.scss
     $ standalone-sass -wm --dir assets/styles/
+    $ standalone-sass -f assets/styles/styles.scss
 `, {
   flags: {
     watch: {
@@ -28,11 +31,14 @@ const cli = meow(`
     },
     dir: {
       type: 'string',
-      alias: 'd',
-      default: '.'
+      alias: 'd'
+    },
+    file: {
+      type: 'string',
+      alias: 'f'
     }
   }
 });
 
 const compiler = new StandaloneSass();
-compiler.init(cli.flags, cli.input[0]);
+compiler.init(cli.flags, cli.input);
