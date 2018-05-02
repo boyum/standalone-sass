@@ -6,7 +6,7 @@ Compile sass/scss on Windows systems, even those without node installed! `standa
 
 ```
   Usage
-    $ standalone-sass <list of directories or files>
+    $ standalone-sass <space seperated list of directories or files>
 
   Options
     --watch, -w       Watch input files/directories
