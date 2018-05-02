@@ -4,7 +4,7 @@ node_js:
  - "9.0"
  - "7.0"
 before_script:
-  - npm install -g xo ava nyc yarn && yarn
+  - npm install -g xo ava nyc npx yarn && yarn
 cache:
   directories:
      - "node_modules"
