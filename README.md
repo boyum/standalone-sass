@@ -9,9 +9,9 @@ Compile sass/scss on Windows systems, even those without node installed! `standa
     $ standalone-sass <list of directories or files>
 
   Options
-    --watch, -w       Watch files in input directory
-    --source-map, -m  Use source maps
-    --dir, -d         Directory
+    --watch, -w       Watch input files/directories
+    --source-map, -m  Render source maps
+    --dir, -d         Specify directory
     --file, -f        Specify file
 
   Examples
