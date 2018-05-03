@@ -37,6 +37,8 @@ $ npm install
 
 To build a Windows executable, run `npm run build`.
 
+Pull requests are welcome.
+
 ## License
 
 Apache 2.0, Sindre Bøyum (2018)
