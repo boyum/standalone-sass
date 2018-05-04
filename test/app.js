@@ -6,6 +6,7 @@ const test = require('ava');
 const rimraf = require('rimraf');
 const StandaloneSass = require('../src/app');
 
+/** @type StandaloneSass */
 let compiler;
 
 test.before(async () => {
@@ -48,7 +49,7 @@ test('`sassFileToCssFile()` throws an error if passed file is not a scss or sass
 test.serial('`compile()` compiles every sass/scss file that is not a partial sass file', async t => {
   await compiler.compile();
 
-  await sleep(100);
+  await sleep(500);
 
   t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
   t.true((await promisify(fs.stat)('test/styles/scss/styles2.css')).isFile());
@@ -56,6 +57,29 @@ test.serial('`compile()` compiles every sass/scss file that is not a partial sas
   await (async () => {
     try {
       await promisify(fs.stat)('test/styles/scss/_buttons.css');
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        t.pass();
+      } else {
+        t.fail();
+      }
+    }
+  })();
+});
+
+test.serial('`compiles() compiles only files that depends on the ones changes, and the changed files themself', async t => {
+  const changedFiles = ['styles.scss'];
+
+  await compiler.compile(changedFiles);
+
+  await sleep(100);
+
+  t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
+  t.true((await promisify(fs.stat)('test/styles/sass/styles.css')).isFile());
+
+  await (async () => {
+    try {
+      await promisify(fs.stat)('test/styles/scss/styles2.css');
     } catch (e) {
       if (e.code === 'ENOENT') {
         t.pass();
@@ -94,6 +118,26 @@ test.serial('`arraysHaveCommonItems()` returns true only if the passed arrays ha
 //   t.true((await promisify(fs.stat)('test/styles/scss/styles.css.map')).isFile());
 //   t.true((await promisify(fs.stat)('test/styles/scss/styles2.css.map')).isFile());
 // });
+
+test.serial('a file passed as -f or --file will be compiled', async t => {
+  const newCompiler = new StandaloneSass();
+  newCompiler.init({
+    file: 'test/styles/scss/styles.scss'
+  });
+
+  await newCompiler.compile();
+  t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
+});
+
+test.serial('a directory passed as -d or --dir will be compiled', async t => {
+  const newCompiler = new StandaloneSass();
+  newCompiler.init({
+    dir: 'test/styles/scss/'
+  });
+
+  await newCompiler.compile();
+  t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
+});
 
 test.serial('do nothing if no sass/scss files were found', async t => {
   try {
@@ -136,6 +180,20 @@ test.serial('supports an array of files and directories', async t => {
   t.true((await promisify(fs.stat)('test/styles/sass/styles.css')).isFile());
 });
 
+/**
+ * Structure:
+ *
+ *  test
+ *    | styles
+ *      | scss
+ *          _buttons.scss
+ *          styles.scss
+ *          styles2.scss
+ *          styles3.scss
+ *      | sass
+ *          styles.sass
+ *
+ */
 async function setupStylesDirectory() {
   try {
     await promisify(fs.mkdir)('test/styles');
