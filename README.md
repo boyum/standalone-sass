@@ -1,6 +1,7 @@
 # standalone-sass
 
 [![Build Status](https://travis-ci.org/boyum/standalone-sass.svg?branch=master)](https://travis-ci.org/boyum/standalone-sass)
+[![Coverage Status](https://coveralls.io/repos/github/boyum/standalone-sass/badge.svg?branch=master)](https://coveralls.io/github/boyum/standalone-sass?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/boyum/standalone-sass.svg)](https://greenkeeper.io/)
 
 Compile sass/scss on Windows systems, even those without node installed! `standalone-sass` is a compiler built with [`node-sass`](https://github.com/sass/node-sass) and [`zeit/pkg`](http://github.com/zeit/pkg).
