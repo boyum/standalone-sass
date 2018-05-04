@@ -11,7 +11,20 @@ const postcss = require('postcss');
 const chalk = require('chalk').default;
 
 class StandaloneSass {
-  async init(options, directoriesAndFiles, doCompile = true) {
+  /**
+   * Initializes compiler with options, and files and directories
+   *
+   * @param {object} options
+   * @param {boolean} options.watch
+   * @param {boolean} options.sourceMap
+   * @param {string} options.dir
+   * @param {string} options.file
+   * @param {string[]} [directoriesAndFiles=[]]
+   * @param {boolean} [doCompile=true]
+   * @returns {void}
+   * @memberof StandaloneSass
+   */
+  async init(options, directoriesAndFiles = [], doCompile = true) {
     /** @type {Map<string, string[]>} */
     this.fileMap = null;
     this.options = options || {
@@ -51,7 +64,7 @@ class StandaloneSass {
     }
 
     if (this.options.file) {
-      sassFiles = sassFiles.push(this.options.file);
+      sassFiles.push(this.options.file);
     }
 
     if (!sassFiles || sassFiles.length === 0) {
@@ -105,6 +118,7 @@ class StandaloneSass {
 
         await promisify(fs.writeFile)(cssPath, css);
 
+        /* istanbul ignore if */
         if (this.options.sourceMap) {
           const sourceMapPath = cssPath + '.map';
           await promisify(fs.writeFile)(sourceMapPath, result.map.toString('utf8'));
