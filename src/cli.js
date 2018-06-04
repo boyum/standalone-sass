@@ -16,8 +16,13 @@ const cli = meow(`
     --file, -f        Specify file
 
   Examples
+    Compile every sass/scss file in the directory assets/styles/, and the file other-assets/styles/styles.scss once:
     $ standalone-sass assets/styles other-assets/styles/styles.scss
+    
+    Compile every sass/scss file in assets/styles/ with source maps, and start watch mode:
     $ standalone-sass -wm --dir assets/styles/
+    
+    Compile assets/styles/styles.scss once:
     $ standalone-sass -f assets/styles/styles.scss
 `, {
   flags: {
