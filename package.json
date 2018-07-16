@@ -29,7 +29,7 @@
     "chalk": "^2.4.1",
     "node-sass": "^4.9.0",
     "nodemon": "^1.17.3",
-    "postcss": "^6.0.22",
+    "postcss": "^7.0.0",
     "recursive-readdir": "^2.2.2",
     "rimraf": "^2.6.2"
   },
