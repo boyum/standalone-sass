@@ -9,7 +9,7 @@
     "nyc-coverage": "nyc check-coverage --lines 90 --functions 95 --branches 90",
     "compile": "node ./src/app.js",
     "watch": "node ./src/app.js --watch",
-    "build": "npx pkg . -t node9-win-x64 --output ./dist/standalone-sass.exe",
+    "build": "npx pkg . -t latest-win-x64 --output ./dist/standalone-sass.exe",
     "travis": "npm test && npm run nyc-coverage"
   },
   "keywords": [],
