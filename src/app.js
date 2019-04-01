@@ -49,10 +49,9 @@ class StandaloneSass {
           const files = await this.getAllFilesInDirectoryRecursive(dir);
           allFiles = allFiles.concat(files);
         } catch (error) {
-          if (error.code === 'ENOTDIR') {
+          const dirIsNotADirectory = error.code === 'ENOTDIR';
+          if (dirIsNotADirectory) {
             allFiles = allFiles.concat(dir);
-          } else {
-            console.error(error);
           }
         }
       });
