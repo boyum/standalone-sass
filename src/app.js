@@ -20,7 +20,7 @@ class StandaloneSass {
    * @param {string} options.dir Input directory
    * @param {string} options.file Input file
    * @param {string[]} [directoriesAndFiles=[]] An array of input directories and/or files
-   * @param {boolean} [doCompile=true] True if the compiler should actually run this cycle, or just set up the program
+   * @param {boolean} [doCompile=true] True if the compiler should actually run this cycle, instead of just setting up the program
    * @memberof StandaloneSass
    */
   async init(options, directoriesAndFiles = [], doCompile = true) {
