@@ -57,8 +57,8 @@ test.serial('`compile()` compiles every sass/scss file that is not a partial sas
   await (async () => {
     try {
       await promisify(fs.stat)('test/styles/scss/_buttons.css');
-    } catch (e) {
-      if (e.code === 'ENOENT') {
+    } catch (error) {
+      if (error.code === 'ENOENT') {
         t.pass();
       } else {
         t.fail();
@@ -80,8 +80,8 @@ test.serial('`compiles() compiles only files that depends on the ones changes, a
   await (async () => {
     try {
       await promisify(fs.stat)('test/styles/scss/styles2.css');
-    } catch (e) {
-      if (e.code === 'ENOENT') {
+    } catch (error) {
+      if (error.code === 'ENOENT') {
         t.pass();
       } else {
         t.fail();
@@ -142,9 +142,9 @@ test.serial('a directory passed as -d or --dir will be compiled', async t => {
 test.serial('do nothing if no sass/scss files were found', async t => {
   try {
     await promisify(fs.mkdir)('test/styles2');
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      console.error(e);
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      console.error(error);
     }
   }
 
@@ -197,25 +197,25 @@ test.serial('supports an array of files and directories', async t => {
 async function setupStylesDirectory() {
   try {
     await promisify(fs.mkdir)('test/styles');
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      console.error(e);
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      console.error(error);
     }
   }
 
   try {
     await promisify(fs.mkdir)('test/styles/scss');
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      console.error(e);
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      console.error(error);
     }
   }
 
   try {
     await promisify(fs.mkdir)('test/styles/sass');
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      console.error(e);
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      console.error(error);
     }
   }
 
@@ -229,8 +229,8 @@ async function setupStylesDirectory() {
 async function deleteStylesDirectory() {
   try {
     await promisify(rimraf)('test/styles');
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
   }
 }
 

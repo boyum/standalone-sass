@@ -14,14 +14,13 @@ class StandaloneSass {
   /**
    * Initializes compiler with options, and files and directories
    *
-   * @param {object} options
-   * @param {boolean} options.watch
-   * @param {boolean} options.sourceMap
-   * @param {string} options.dir
-   * @param {string} options.file
-   * @param {string[]} [directoriesAndFiles=[]]
-   * @param {boolean} [doCompile=true]
-   * @returns {void}
+   * @param {object} options Compiler arguments
+   * @param {boolean} options.watch Whether or not the compiler should run whenever a file is updated
+   * @param {boolean} options.sourceMap True if the compiler should generate source maps
+   * @param {string} options.dir Input directory
+   * @param {string} options.file Input file
+   * @param {string[]} [directoriesAndFiles=[]] An array of input directories and/or files
+   * @param {boolean} [doCompile=true] True if the compiler should actually run this cycle, or just set up the program
    * @memberof StandaloneSass
    */
   async init(options, directoriesAndFiles = [], doCompile = true) {
@@ -49,11 +48,11 @@ class StandaloneSass {
         try {
           const files = await this.getAllFilesInDirectoryRecursive(dir);
           allFiles = allFiles.concat(files);
-        } catch (e) {
-          if (e.code === 'ENOTDIR') {
+        } catch (error) {
+          if (error.code === 'ENOTDIR') {
             allFiles = allFiles.concat(dir);
           } else {
-            console.error(e);
+            console.error(error);
           }
         }
       });
@@ -88,7 +87,7 @@ class StandaloneSass {
   /**
    * Compiles given directory
    *
-   * @param {string[]} changedFiles
+   * @param {string[]} changedFiles An array of the changed files' paths
    */
   async compile(changedFiles = []) {
     if (this.fileMap === null) {
@@ -101,8 +100,8 @@ class StandaloneSass {
         const dir = path.dirname(sassFile);
         try {
           result = await this.compileSass(sassFile, dir, Boolean(this.options.sourceMap));
-        } catch (e) {
-          console.log(`${sassFile}: ${chalk.red(e)}`);
+        } catch (error) {
+          console.log(`${sassFile}: ${chalk.red(error)}`);
           return;
         }
 
@@ -123,6 +122,7 @@ class StandaloneSass {
           const sourceMapPath = cssPath + '.map';
           await promisify(fs.writeFile)(sourceMapPath, result.map.toString('utf8'));
         }
+
         console.log(chalk.green(`Compiled ${sassFile} successfully`));
       }
     });
@@ -131,18 +131,19 @@ class StandaloneSass {
   /**
    * Gets all sass/scss files in given directory recursively
    *
-   * @param {string} directory
-   * @returns {Promise<string[]>}
+   * @param {string} directory What directory to look for sass/scss files in
+   * @returns {Promise<string[]>} An async promise that resolves when the program is done searching for sass/scss files
    */
   getAllFilesInDirectoryRecursive(directory) {
     return recursiveReaddir(directory);
   }
 
   /**
-   * Returns true if any elements in the two arrays are equal strings (case-insensitive)
+   * Check if two arrays contain equal strings (case-insensitive)
    *
-   * @param {string[]} array1
-   * @param {string[]} array2
+   * @param {string[]} array1 Array 1
+   * @param {string[]} array2 Array 2
+   * @returns {boolean} True if any elements in the two arrays are equal strings
    */
   arraysHaveCommonItems(array1, array2) {
     return array1.some(el => {
@@ -153,10 +154,10 @@ class StandaloneSass {
   /**
    * Compiles sass/scss with node-sass
    *
-   * @param {string} file
+   * @param {string} file The file to compile
    * @param {string} dest Destination directory
-   * @param {boolean} sourceMap
-   * @returns
+   * @param {boolean} sourceMap True if a source map should be generated
+   * @returns {Promise<Result>} An async promise that resolves when the file is compiled
    */
   compileSass(file, dest, sourceMap) {
     return promisify(sass.render)({
@@ -171,9 +172,9 @@ class StandaloneSass {
    * Autoprefixes css
    * https://github.com/postcss/autoprefixer
    *
-   * @param {string} css
-   * @param {string} file
-   * @returns {postscss.LazyResult}
+   * @param {string} css A string representation of the stylesheet
+   * @param {string} file The compiled file
+   * @returns {postscss.LazyResult} An async promise that resolves when the stylesheet has been autoprefixed
    */
   autoprefix(css, file) {
     const browsers = 'ie 10, > 0.5%, last 3 versions';
@@ -191,8 +192,8 @@ class StandaloneSass {
   /**
    * Updates file's extension from sass or scss to css
    *
-   * @param {string} file
-   * @returns {string}
+   * @param {string} file The file to rename
+   * @returns {string} The new file name
    */
   sassFileToCssFile(file) {
     if (!path.extname(file).match(/s[ac]ss/ig)) {
