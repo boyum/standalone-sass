@@ -164,7 +164,39 @@ test.serial('do nothing if no sass/scss files were found', async t => {
   promisify(rimraf)('test/styles2');
 });
 
-test.serial('supports an array of files and directories', async t => {
+test.serial('supports an array of only directories', async t => {
+  const newCompiler = new StandaloneSass();
+  await newCompiler.init({
+    watch: false,
+    sourceMap: false,
+    dir: '.'
+  }, ['test/styles/sass/', 'test/styles/scss/'], false);
+
+  await newCompiler.compile();
+
+  await sleep(100);
+
+  t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
+  t.true((await promisify(fs.stat)('test/styles/sass/styles.css')).isFile());
+});
+
+test.serial('supports an array of only files', async t => {
+  const newCompiler = new StandaloneSass();
+  await newCompiler.init({
+    watch: false,
+    sourceMap: false,
+    dir: '.'
+  }, ['test/styles/sass/styles.sass', 'test/styles/scss/styles.scss'], false);
+
+  await newCompiler.compile();
+
+  await sleep(100);
+
+  t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
+  t.true((await promisify(fs.stat)('test/styles/sass/styles.css')).isFile());
+});
+
+test.serial('supports an array of both files and directories', async t => {
   const newCompiler = new StandaloneSass();
   await newCompiler.init({
     watch: false,
@@ -178,6 +210,25 @@ test.serial('supports an array of files and directories', async t => {
 
   t.true((await promisify(fs.stat)('test/styles/scss/styles.css')).isFile());
   t.true((await promisify(fs.stat)('test/styles/sass/styles.css')).isFile());
+});
+
+test('if no option param is passed, use defaults', t => {
+  const newCompiler = new StandaloneSass();
+  newCompiler.init(undefined, false);
+
+  t.deepEqual(newCompiler.options, StandaloneSass.defaultOptions);
+});
+
+test('use dir from `options` if the passed `directoriesAndFiles` param is not an array', t => {
+  const newCompiler = new StandaloneSass();
+  const NOT_AN_ARRAY = 'NOT_AN_ARRAY';
+  const dir = '.';
+
+  newCompiler.init({
+    dir
+  }, NOT_AN_ARRAY);
+
+  t.deepEqual(newCompiler.directoriesAndFiles, [dir]);
 });
 
 /**

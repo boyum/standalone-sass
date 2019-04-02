@@ -11,6 +11,15 @@ const postcss = require('postcss');
 const chalk = require('chalk').default;
 
 class StandaloneSass {
+  static get defaultOptions() {
+    return {
+      watch: false,
+      sourceMap: false,
+      dir: '',
+      file: ''
+    };
+  }
+
   /**
    * Initializes compiler with options, and files and directories
    *
@@ -24,24 +33,31 @@ class StandaloneSass {
    * @memberof StandaloneSass
    */
   async init(options, directoriesAndFiles = [], doCompile = true) {
-    /** @type {Map<string, string[]>} */
-    this.fileMap = null;
-    this.options = options || {
-      watch: false,
-      sourceMap: false,
-      dir: '',
-      file: ''
+    this.options = {
+      ...StandaloneSass.defaultOptions,
+      ...options
     };
 
-    /** @type {string[]} */
-    this.directoriesAndFiles = directoriesAndFiles.filter(async item => (await promisify(fs.lstat)(item)).isDirectory()) || options.dir;
+    /** @type {Map<string, string[]>} */
+    this.fileMap = null;
+
+    if (Array.isArray(directoriesAndFiles)) {
+      /** @type {string[]} */
+      this.directoriesAndFiles = directoriesAndFiles.filter(async item => (await promisify(fs.lstat)(item)).isDirectory());
+    } else {
+      this.directoriesAndFiles = [];
+    }
+
     if (this.options.dir) {
       this.directoriesAndFiles = this.directoriesAndFiles.concat(this.options.dir);
     }
 
-    let sassFiles = [];
+    if (this.options.file) {
+      this.directoriesAndFiles = this.directoriesAndFiles.concat(this.options.file);
+    }
 
-    if (this.directoriesAndFiles.length > 0) {
+    let sassFiles = [];
+    if (Array.isArray(this.directoriesAndFiles) && this.directoriesAndFiles.length > 0) {
       let allFiles = [];
 
       await this.directoriesAndFiles.forEach(async dir => {
@@ -214,8 +230,7 @@ class StandaloneSass {
 
     console.log(chalk.blue(`Watching sass and scss files in ${directoriesAndFiles}.`));
 
-    nodemon.on('start', () => {
-    });
+    nodemon.on('start', () => {});
 
     nodemon.on('restart', changedFiles => {
       this.compile(changedFiles.map(file => file.replace(/\\/ig, '/')));
