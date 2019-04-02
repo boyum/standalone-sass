@@ -61,8 +61,15 @@ class StandaloneSass {
       let allFiles = [];
 
       await this.directoriesAndFiles.forEach(async dir => {
-        const files = await this.getAllFilesInDirectoryRecursive(dir);
-        allFiles = allFiles.concat(files);
+        try {
+          const files = await this.getAllFilesInDirectoryRecursive(dir);
+          allFiles = allFiles.concat(files);
+        } catch (error) {
+          const dirIsNotADirectory = error.code === 'ENOTDIR';
+          if (dirIsNotADirectory) {
+            allFiles = allFiles.concat(dir);
+          }
+        }
       });
 
       await sleep(100);
