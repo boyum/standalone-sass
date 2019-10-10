@@ -18,7 +18,7 @@
   "license": "ISC",
   "devDependencies": {
     "ava": "^1.4.1",
-    "coveralls": "^3.0.3",
+    "coveralls": "^3.0.7",
     "meow": "^5.0.0",
     "nyc": "^12.0.1",
     "pkg": "^4.3.5",
